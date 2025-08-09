@@ -20,10 +20,9 @@ export class SidebarComponent {
   @Input() playlists: UserPlaylists | null = null;
   @Output() playlistSelected = new EventEmitter<string>();
 
-
+  selectedPlaylistId: string | null = null;
   constructor(private router: Router) {
   }
-
 
   goToPlaylist(playlistId: string) {
     this.playlistSelected.emit(playlistId);

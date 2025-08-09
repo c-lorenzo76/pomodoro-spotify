@@ -1,9 +1,11 @@
-import {Component, Input} from '@angular/core';
-import {PlaylistSongs} from '../../interfaces/playlistSongs.interface';
-import {UserService} from '../../services/user/user.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {NgIf, NgOptimizedImage} from '@angular/common';
-import {Skeleton} from 'primeng/skeleton';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { PlaylistSongs } from '../../interfaces/playlistSongs.interface';
+import { UserService } from '../../services/user/user.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgIf, NgOptimizedImage } from '@angular/common';
+import { Skeleton } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from "primeng/button";
 
 @Component({
   selector: 'app-curr-playlist',
@@ -11,43 +13,97 @@ import {Skeleton} from 'primeng/skeleton';
   imports: [
     NgIf,
     NgOptimizedImage,
-    Skeleton
+    Skeleton,
+    TableModule,
+    ButtonModule
   ],
   templateUrl: './curr-playlist.component.html',
 
 })
-export class CurrPlaylistComponent {
+export class CurrPlaylistComponent implements OnChanges {
 
-  playlistID: string | null = null;
+  @Input() playlistID: string | null = null;
   playlistSongs: PlaylistSongs | null = null;
+  playlistOwnerImageUrl: string | null = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService
-  ) {}
+  ) { }
+
+  getPlaylistDuration(): string {
+    if (!this.playlistSongs) {
+      return '0:00';
+    }
+    const totalDurationMs = this.playlistSongs.tracks.items.reduce((acc, item) => {
+      return acc + (item.track?.duration_ms || 0);
+    }, 0);
+
+    return this.formatPlaylistDuration(totalDurationMs);
+  }
+
+  formatPlaylistDuration(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+    if (hours > 0 && minutes === 0) {
+      return `${hours} hr`;
+    } else if (hours > 0) {
+      return `${hours} hr ${minutes} min`;
+    } else {
+      return `${minutes} min`;
+    }
+  }
+
+  formatDuration(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
+  async fetchPlaylistSongs(id: string): Promise<void> {
+    try {
+      const playlistSongs = await this.userService.getCurrentPlaylistSongs(id);
+      this.playlistSongs = playlistSongs;
+
+      // Fetch the owner's profile image URL
+      if (playlistSongs.owner.id) {
+        const ownerProfile = await this.userService.getUserProfile(playlistSongs.owner.id)
+        this.playlistOwnerImageUrl = ownerProfile.images?.[0].url || null;
+      } else {
+        this.playlistOwnerImageUrl = null;
+      }
+
+    } catch (error) {
+      console.error('Error fetching playlist songs:', error);
+    }
+  }
+
+  getArtistNames(song: any): string {
+    return song.track.artists.map((artist: any) => artist.name).join(', ');
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['playlistID'] && this.playlistID) {
+      this.fetchPlaylistSongs(this.playlistID);
+    }
+  }
 
   async ngOnInit(): Promise<void> {
 
-    this.route.queryParams.subscribe(async params => {
-      this.playlistID = params['id'] || null;
-      if (!this.playlistID) {
-        console.error('No playlist ID provided in query params');
-        return;
-      }
-      const [playlistSongsRes] = await Promise.allSettled([
-        this.userService.getCurrentPlaylistSongs(this.playlistID),
-      ]);
-
-      if (playlistSongsRes.status === 'fulfilled') {
-        this.playlistSongs = playlistSongsRes.value;
-      } else {
-        console.error('Error fetching current playlist songs:', playlistSongsRes.reason);
+    this.route.queryParams.subscribe(params => {
+      const id = params['id'] || null;
+      if (id) {
+        this.playlistID = id;
+        this.fetchPlaylistSongs(id);
       }
     });
   }
 
 
+
+
 }
-
-

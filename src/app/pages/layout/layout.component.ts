@@ -23,12 +23,21 @@ export class LayoutComponent implements OnInit {
 
   user: User | null = null;
   playlists: UserPlaylists | null = null;
+  selectedPlaylistId: string | null = null;
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private userService: UserService,
   ) {
+  }
+
+  onPlaylistSelected(playlistId: string): void {
+    this.selectedPlaylistId = playlistId;
+    this.router.navigate([], {
+      queryParams: {playlistId: playlistId},
+      queryParamsHandling: 'merge',
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -49,6 +58,8 @@ export class LayoutComponent implements OnInit {
       console.error('Error fetching user playlists:', playlistRes.reason);
     }
   }
+
+  
 
 }
 

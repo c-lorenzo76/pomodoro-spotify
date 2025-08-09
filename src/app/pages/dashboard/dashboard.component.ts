@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ProfileNavComponent} from '../../components/profile-nav/profile-nav.component';
 import {User} from '../../interfaces/user.interface';
 import {AuthService} from '../../services/auth/auth.service';
@@ -15,7 +15,6 @@ import {CurrPlaylistComponent} from '../../components/curr-playlist/curr-playlis
   standalone: true,
   imports: [
     ProfileNavComponent,
-
     SubNavbarComponent,
     CountdownComponent,
     CurrPlaylistComponent
@@ -32,6 +31,7 @@ export class DashboardComponent {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private userService: UserService
   ) {}
@@ -42,6 +42,10 @@ export class DashboardComponent {
       this.userService.getUserPlaylists(),
       this.userService.getFollowedArtists(),
     ]);
+
+    this.route.queryParams.subscribe(params => {
+      this.selectedPlaylistId = params['playlistId'] || null;
+    });
 
     if (userRes.status === 'fulfilled') {
       this.user = userRes.value;
@@ -60,6 +64,9 @@ export class DashboardComponent {
     } else {
       console.error('Error fetching user following:', followingRes.reason);
     }
+
+
+
   }
 
 

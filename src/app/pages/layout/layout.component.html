@@ -2,10 +2,10 @@
   <app-navbar [user]="user"></app-navbar>
 
   <div class="flex flex-1 overflow-hidden bg-gray-100">
-    <app-sidebar [playlists]="playlists"></app-sidebar>
+    <app-sidebar (playlistSelected)="onPlaylistSelected($event)" [playlists]="playlists"></app-sidebar>
 
     <div class="flex-1 overflow-y-auto">
-      <div class="flex flex-col h-full w-full border-4 border-red-500">
+      <div class="flex flex-col h-full w-full">
         <router-outlet></router-outlet>
       </div>
     </div>

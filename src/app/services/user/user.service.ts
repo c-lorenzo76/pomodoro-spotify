@@ -51,7 +51,7 @@ export class UserService {
     if (!accessToken) throw new Error('No access token');
     if (!playlistID) throw new Error('No playlist ID provided');
     // View for vulnerabilities here
-    const response = await fetch(`${this.baseUrl}/playlists/${playlistID}`, {
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}`, {
       headers: {
         Authorization: 'Bearer ' + accessToken,
       },
@@ -61,6 +61,26 @@ export class UserService {
       throw new Error(`Failed to fetch current playlist songs: ${response.statusText}`);
     }
 
+    return await response.json();
+  }
+
+  // Gets the user profile of a given user ID, used to fetch the playlist owner's profile
+  // Might need to change 
+  async getUserProfile(userId: string) {
+    let accessToken = localStorage.getItem('access_token');
+    if (!accessToken) throw new Error('No access token');
+    if (!userId) throw new Error('No user ID provided');
+
+    const response = await fetch(`https://api.spotify.com/v1/users/${userId}`, {
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user profile: ${response.statusText}`);
+    }
+    
     return await response.json();
   }
 }

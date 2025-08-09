@@ -3,7 +3,7 @@
 @import "primeicons/primeicons.css";
 
 :root {
-  --font-sans: '';
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
   --card: 0 0% 100%;
@@ -25,4 +25,9 @@
   --ring: 240 5.9% 10%;
   --radius: 0.5rem;
   color-scheme: light;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  
 }

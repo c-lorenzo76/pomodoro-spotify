@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {User} from '../../interfaces/user.interface';
 import {NgIf, NgOptimizedImage} from '@angular/common';
-import {Skeleton} from 'primeng/skeleton';
+import {Skeleton} from 'primeng/skeleton';;
 
 @Component({
   selector: 'app-navbar',

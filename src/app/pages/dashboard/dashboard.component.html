@@ -1,9 +1,9 @@
 <div>
   <app-profile-nav [user]="user" [playlists]="playlists" [following]="following"></app-profile-nav>
   <app-sub-navbar></app-sub-navbar>
-  <div class="flex flex-col lg:flex-row border-4 border-red-500">
+  <div class="flex flex-col lg:flex-row">
     <app-countdown class="flex-1"></app-countdown>
-    <app-curr-playlist class="flex-1"></app-curr-playlist>
+    <app-curr-playlist class="flex-1" [playlistID]="selectedPlaylistId"></app-curr-playlist>
   </div>
 
 </div>

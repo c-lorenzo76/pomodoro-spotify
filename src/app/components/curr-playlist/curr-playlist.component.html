@@ -1,22 +1,83 @@
-<div class="bg-gray-100 border-4 border-blue p-4 h-full border-b-2">
-  <div class="flex flex-col lg:flex-row lg:justify-between items-start">
-    <div class="flex flex-col md:flex-row items-start">
-      <img
-        *ngIf="playlistSongs"
-        [ngSrc]="playlistSongs.images[0].url"
-        alt="Avatar"
-        class="mr-5 mb-3 lg:mb-0 w-24 h-24 rounded-full"
-        height="70" width="71"/>
-      <p-skeleton *ngIf="!playlistSongs" size="6rem" shape="square"/>
+<div class="bg-gray-100  p-4 h-full ">
+  <div class="flex flex-col lg:flex-row lg:justify-between items-start mt-6">
+    <!-- // Have a whole div block that is for ngif the playlist has been selected otherwise show a skeleton. So one div for selected another for no selected -->
+    <div *ngIf="!playlistSongs" class="flex flex-row items-start">
+      <p-skeleton size="6rem" shape="square" />
+      <div class="flex flex-col ml-2 gap-1">
+        <p-skeleton width="10rem" height="2rem" />
+        <p-skeleton width="10rem" height="2rem" />
+        <div class="flex items-center gap-x-1">
+          <p-skeleton width="10rem" height="1.5rem" class="" />
+        </div>
+        
+      </div>
+    </div>
+
+    <div *ngIf="playlistSongs" class="flex flex-row items-start">
+      <img [ngSrc]="playlistSongs.images[0].url" alt="Avatar"
+        class="mr-5 mb-3 lg:mb-0 w-32 h-32 rounded" height="70" width="71" />
+        
       <div class="ml-2">
         <span *ngIf="playlistSongs?.public" class="text-gray-900 font-medium text-md">Public Playlist</span>
         <span *ngIf="!playlistSongs?.public" class="text-gray-900 font-medium text-md">Private Playlist</span>
-
-        <span *ngIf="playlistSongs?.name" class="text-gray-900 font-medium text-3xl">{{ playlistSongs?.name }}</span>
-        <p-skeleton *ngIf="!playlistSongs?.name" width="10rem" height="2rem" class="mt-1"/>
-
+        <br />
+        <span class="text-gray-900 font-medium text-5xl">{{ playlistSongs.name }}</span>
+        <br />
+        <div class="flex items-center mt-4 gap-x-1">
+          <img *ngIf="playlistOwnerImageUrl" [src]="playlistOwnerImageUrl" alt="Owner Avatar"
+            class="w-8 h-8 rounded-full" />
+          <span> {{ playlistSongs.owner.display_name }}</span>
+          <span class="text-gray-400">•</span>
+          <span>{{ playlistSongs.tracks.total }} songs</span>
+          <span class="text-gray-400">•</span>
+          <span>{{ getPlaylistDuration() }}</span>
+        </div>
       </div>
-
     </div>
-</div>
+  </div>
+
+  <div class="mt-6">
+    
+    <p-table [value]="playlistSongs?.tracks?.items || []" [scrollable]="true" scrollHeight="475px">
+      <ng-template #caption>
+        <div class="flex items-center justify-between">
+          <span class="text-xl font-bold">Songs</span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="text-gray-400">#</th>
+          <th class="text-gray-400">Title</th>
+          <th class="hidden 2xl:table-cell text-gray-400">Album</th>
+          <th class="text-gray-400">
+            <svg data-encore-id="icon" role="img" aria-hidden="true" class="e-91000-icon e-91000-baseline w-5 h-5 text-gray-400" viewBox="0 0 16 16" style="--encore-icon-height: var(--encore-graphic-size-decorative-smaller); --encore-icon-width: var(--encore-graphic-size-decorative-smaller);"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"></path><path d="M8 3.25a.75.75 0 0 1 .75.75v3.25H11a.75.75 0 0 1 0 1.5H7.25V4A.75.75 0 0 1 8 3.25"></path></svg>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-song let-rowIndex="rowIndex">
+        <tr>
+          <td>{{ rowIndex + 1 }}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <img *ngIf="song.track.album.images.length" [src]="song.track.album.images[0].url"
+                class="w-14 h-14 rounded" />
+              <div class="flex flex-col">
+                <span>
+                  {{ song.track.name }}
+                </span>
+                <span class="truncate ">
+                  {{ getArtistNames(song) }}
+                </span>
+              </div>
+
+            </div>
+          </td>
+          <td class="hidden 2xl:table-cell">{{ song.track.album.name }}</td>
+          <td> {{ formatDuration(song.track.duration_ms) }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    
+  </div>
+
 </div>
