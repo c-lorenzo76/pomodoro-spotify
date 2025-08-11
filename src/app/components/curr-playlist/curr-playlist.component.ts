@@ -25,12 +25,15 @@ export class CurrPlaylistComponent implements OnChanges {
   @Input() playlistID: string | null = null;
   playlistSongs: PlaylistSongs | null = null;
   playlistOwnerImageUrl: string | null = null;
+  scrollHeight = '470px';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService
   ) { }
+
+
 
   getPlaylistDuration(): string {
     if (!this.playlistSongs) {
@@ -94,6 +97,9 @@ export class CurrPlaylistComponent implements OnChanges {
 
   async ngOnInit(): Promise<void> {
 
+    this.setScrollHeight();
+    window.addEventListener('resize', this.setScrollHeight.bind(this));
+
     this.route.queryParams.subscribe(params => {
       const id = params['id'] || null;
       if (id) {
@@ -101,6 +107,21 @@ export class CurrPlaylistComponent implements OnChanges {
         this.fetchPlaylistSongs(id);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.setScrollHeight.bind(this));
+  }
+
+  setScrollHeight() {
+    const windowWidth = window.innerHeight;
+    if (windowWidth >= 1024) {
+      this.scrollHeight = '515px';
+    } else if (windowWidth >= 768) {
+      this.scrollHeight = '365px';
+    } else {
+      this.scrollHeight = '470px';
+    }
   }
 
 

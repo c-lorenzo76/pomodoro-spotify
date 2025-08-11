@@ -2,11 +2,7 @@
   <h2 class="text-2xl font-semibold text-gray-800">Pomodoro Timer</h2>
   <h4 class="text-md font-semibold text-gray-600">Breaks</h4>
 
-  <p-timeline
-    [value]="timelineEvents"
-    layout="horizontal"
-    align="top"
-  >
+  <p-timeline [value]="timelineEvents" layout="horizontal" align="top">
     <ng-template pTemplate="content" let-event let-i="index">
       <span [ngClass]="{ 'text-gray-900': i === intervalIndex }" class="ml-1">
         {{ event.label }}
@@ -20,35 +16,33 @@
       <input type="number" [(ngModel)]="breakDuration"
              class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" min="1">
     </div>
+
+    <!-- Need to make this to be similar to the timeInput where it takes mins:secs -->
+    <!-- <div>
+      <label class="block text-sm font-medium text-gray-700">Break (mins)</label>
+      <input type="text" [(ngModel)]="breakInput" (blur)="onBreakInputBlur()" placeholder="mm:ss"
+        class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" />
+    </div> -->
+
     <div>
       <label class="block text-sm font-medium text-gray-700">Intervals</label>
-      <input
-        type="number"
-        [(ngModel)]="intervals"
-        (ngModelChange)="generateTimelineEvents()"
-        class="mt-1 block w-full border border-gray-300 rounded px-2 py-1"
-        min="1"
-      />
+      <input type="number" [(ngModel)]="intervals" (ngModelChange)="generateTimelineEvents()"
+        class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" min="1" />
     </div>
   </div>
 
+  <!-- Have it when you select the minutes or secs it highlights or changes the background color to let user know -->
   <div class="flex justify-center items-center text-6xl font-mono text-gray-900 cursor-pointer" (click)="onTimeClick()">
     <ng-container *ngIf="!isEditingTime; else editMode">
       {{ formatTime(timeLeft) }}
     </ng-container>
 
     <ng-template #editMode>
-      <input
-        type="text"
-        [(ngModel)]="customTimeInput"
-        (blur)="onTimeInputBlur()"
-        (keydown.enter)="onTimeInputBlur()"
+      <input type="text" [(ngModel)]="customTimeInput" (blur)="onTimeInputBlur()" (keydown.enter)="onTimeInputBlur()"
         class="text-6xl font-mono text-gray-900 w-full text-center border-b border-gray-400 focus:outline-none"
-        autofocus
-      />
+        autofocus />
     </ng-template>
   </div>
-
 
   <!--  <div class="flex justify-center items-center text-6xl font-mono text-gray-900">-->
   <!--    {{ formatTime(timeLeft) }}-->
@@ -56,37 +50,27 @@
 
   <div class="flex justify-center gap-4">
     <!-- Start button: only if timer hasn't started -->
-    <button
-      *ngIf="!hasStarted"
-      (click)="startTimer()"
+    <button *ngIf="!hasStarted" (click)="startTimer()"
       class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
       Start
     </button>
 
     <!-- Pause + Reset buttons: shown when running -->
     <ng-container *ngIf="hasStarted && isRunning">
-      <button
-        (click)="pauseTimer()"
-        class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500">
+      <button (click)="pauseTimer()" class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500">
         Pause
       </button>
-      <button
-        (click)="resetTimer()"
-        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+      <button (click)="resetTimer()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
         Reset
       </button>
     </ng-container>
 
     <!-- Unpause + Reset buttons: shown when paused -->
     <ng-container *ngIf="hasStarted && !isRunning && timeLeft > 0">
-      <button
-        (click)="startTimer()"
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+      <button (click)="startTimer()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
         Resume
       </button>
-      <button
-        (click)="resetTimer()"
-        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+      <button (click)="resetTimer()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
         Reset
       </button>
     </ng-container>

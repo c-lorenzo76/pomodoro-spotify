@@ -2,12 +2,12 @@
   <div class="flex flex-col lg:flex-row lg:justify-between items-start mt-6">
     <!-- // Have a whole div block that is for ngif the playlist has been selected otherwise show a skeleton. So one div for selected another for no selected -->
     <div *ngIf="!playlistSongs" class="flex flex-row items-start">
-      <p-skeleton size="6rem" shape="square" />
+      <p-skeleton size="6rem" shape="square" animation="none"/>
       <div class="flex flex-col ml-2 gap-1">
-        <p-skeleton width="10rem" height="2rem" />
-        <p-skeleton width="10rem" height="2rem" />
+        <p-skeleton width="10rem" height="2rem" animation="none"/>
+        <p-skeleton width="10rem" height="2rem" animation="none"/>
         <div class="flex items-center gap-x-1">
-          <p-skeleton width="10rem" height="1.5rem" class="" />
+          <p-skeleton width="10rem" animation="none" height="1.5rem"/>
         </div>
         
       </div>
@@ -15,17 +15,17 @@
 
     <div *ngIf="playlistSongs" class="flex flex-row items-start">
       <img [ngSrc]="playlistSongs.images[0].url" alt="Avatar"
-        class="mr-5 mb-3 lg:mb-0 w-32 h-32 rounded" height="70" width="71" />
+        class="mr-3 mb-3 lg:mb-0 w-32 h-32 rounded" height="70" width="71" />
         
       <div class="ml-2">
         <span *ngIf="playlistSongs?.public" class="text-gray-900 font-medium text-md">Public Playlist</span>
         <span *ngIf="!playlistSongs?.public" class="text-gray-900 font-medium text-md">Private Playlist</span>
         <br />
-        <span class="text-gray-900 font-medium text-5xl">{{ playlistSongs.name }}</span>
+        <span class="text-gray-900 font-medium text-5xl lg:text-4xl xl:text-5xl">{{ playlistSongs.name }}</span>
         <br />
         <div class="flex items-center mt-4 gap-x-1">
           <img *ngIf="playlistOwnerImageUrl" [src]="playlistOwnerImageUrl" alt="Owner Avatar"
-            class="w-8 h-8 rounded-full" />
+            class="w-8 h-8 rounded-full " />
           <span> {{ playlistSongs.owner.display_name }}</span>
           <span class="text-gray-400">•</span>
           <span>{{ playlistSongs.tracks.total }} songs</span>
@@ -38,7 +38,9 @@
 
   <div class="mt-6">
     
-    <p-table [value]="playlistSongs?.tracks?.items || []" [scrollable]="true" scrollHeight="475px">
+    <p-table [value]="playlistSongs?.tracks?.items || []" [scrollable]="true" [scrollHeight]="scrollHeight"
+    [tableStyle]="{'table-layout': 'fixed'}"
+    >
       <ng-template #caption>
         <div class="flex items-center justify-between">
           <span class="text-xl font-bold">Songs</span>
@@ -46,10 +48,10 @@
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th class="text-gray-400">#</th>
+          <th class="text-gray-400 w-8">#</th>
           <th class="text-gray-400">Title</th>
           <th class="hidden 2xl:table-cell text-gray-400">Album</th>
-          <th class="text-gray-400">
+          <th class="text-gray-400 w-18">
             <svg data-encore-id="icon" role="img" aria-hidden="true" class="e-91000-icon e-91000-baseline w-5 h-5 text-gray-400" viewBox="0 0 16 16" style="--encore-icon-height: var(--encore-graphic-size-decorative-smaller); --encore-icon-width: var(--encore-graphic-size-decorative-smaller);"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"></path><path d="M8 3.25a.75.75 0 0 1 .75.75v3.25H11a.75.75 0 0 1 0 1.5H7.25V4A.75.75 0 0 1 8 3.25"></path></svg>
           </th>
         </tr>
@@ -61,11 +63,11 @@
             <div class="flex items-center gap-2">
               <img *ngIf="song.track.album.images.length" [src]="song.track.album.images[0].url"
                 class="w-14 h-14 rounded" />
-              <div class="flex flex-col">
-                <span>
+              <div class="flex flex-col min-w-0">
+                <span class="truncate">
                   {{ song.track.name }}
                 </span>
-                <span class="truncate ">
+                <span class="truncate">
                   {{ getArtistNames(song) }}
                 </span>
               </div>

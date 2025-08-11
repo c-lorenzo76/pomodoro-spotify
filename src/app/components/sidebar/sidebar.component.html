@@ -1,7 +1,7 @@
 <div id="app-sidebar"
-     class="hidden lg:flex flex-col w-[350px] flex-shrink-0 bg-[#ffffff] border-r border-gray-300 h-full">
+  class="hidden lg:flex flex-col w-[350px] bg-[#1a1a1a] flex-shrink-0 border-r border-gray-900 h-full">
 
-  <div class="p-3 text-gray-600 text-3xl font-medium flex-shrink-0">
+  <div class="p-3 text-white text-3xl font-medium flex-shrink-0">
     Library
   </div>
 
@@ -11,23 +11,20 @@
         <div *ngIf="p.items.length > 0; else noPlaylists">
           <ul class="list-none p-0 m-0">
             <li *ngFor="let playlist of p.items">
-              <div class="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition gap-3"
-                   (click)="goToPlaylist(playlist.id)"
-              >
-                <img
-                  *ngIf="playlist.images.length"
-                  [ngSrc]="playlist.images[0].url"
-                  [width]="40"
-                  [height]="40"
-                  alt="Playlist Cover"
-                  class="w-14 h-14 rounded object-cover"
-                />
+              <div class="flex items-center p-3 mx-2.5 rounded-lg hover:bg-zinc-700 cursor-pointer transition gap-3"
+                (click)="goToPlaylist(playlist.id)"
+                [ngClass]="{ 'bg-zinc-700': selectedPlaylistId === playlist.id }"
+                >
+                <img *ngIf="playlist.images.length" [ngSrc]="playlist.images[0].url" [width]="40" [height]="40"
+                  alt="Playlist Cover" class="w-14 h-14 rounded object-cover" />
                 <div class="flex flex-col">
                   <!-- Have it also pass an image which is the playlist.images[0].url -->
                   <!-- Have it pass to curr-playlist then i make another call to api for 'Get playlist' -->
-                  <span class="text-sm text-gray-500 truncate">{{ playlist.id }}</span>
-                  <span class="text-lg font-medium text-gray-900 truncate">{{ playlist.name }}</span>
-                  <span class="text-md text-gray-500 truncate">{{ playlist.owner.display_name }}</span>
+                  <!-- <span class="text-sm text-gray-500 truncate">{{ playlist.id }}</span> -->
+                  <span class="text-lg truncate text-white">{{ playlist.name }}</span>
+                  <span class="text-md text-gray-400 truncate">
+                    {{ playlist.owner.display_name }}
+                  </span>
                 </div>
               </div>
             </li>

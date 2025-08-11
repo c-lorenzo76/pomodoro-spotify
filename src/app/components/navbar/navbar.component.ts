@@ -1,7 +1,9 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ViewChild} from '@angular/core';
 import {User} from '../../interfaces/user.interface';
 import {NgIf, NgOptimizedImage} from '@angular/common';
-import {Skeleton} from 'primeng/skeleton';;
+import {Popover, PopoverModule} from 'primeng/popover';
+import { ButtonModule } from 'primeng/button';
+import {AuthService} from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,13 +11,27 @@ import {Skeleton} from 'primeng/skeleton';;
   imports: [
     NgOptimizedImage,
     NgIf,
-    Skeleton
+    PopoverModule, 
+    ButtonModule,
   ],
   templateUrl: './navbar.component.html',
 
 })
 export class NavbarComponent {
 
+  constructor(private authService: AuthService) {}
+
+  @ViewChild('op') op!: Popover;
+
   @Input() user: User | null = null;
+
+  toggle(event : MouseEvent) {
+    this.op.toggle(event);
+  }
+
+  signOut(){
+    this.authService.logout();
+
+  }
 
 }

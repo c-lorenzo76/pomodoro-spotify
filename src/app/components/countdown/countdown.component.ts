@@ -1,7 +1,7 @@
-import {Component, OnDestroy} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {JsonPipe, NgClass, NgIf} from '@angular/common';
-import {TimelineModule} from 'primeng/timeline';
+import { Component, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { JsonPipe, NgClass, NgIf } from '@angular/common';
+import { TimelineModule } from 'primeng/timeline';
 
 @Component({
   selector: 'app-countdown',
@@ -19,6 +19,7 @@ import {TimelineModule} from 'primeng/timeline';
 export class CountdownComponent implements OnDestroy {
   workDuration = 25;
   breakDuration = 5;
+  breakInput = '05:00'
   intervals = 4;
 
   timeLeft = 0;
@@ -26,11 +27,12 @@ export class CountdownComponent implements OnDestroy {
   isRunning = false;
   isWorkSession = true;
   timelineEvents = [
-    {label: 'Work 1'},
-    {label: 'Break 1'},
-    {label: 'Work 2'},
-    {label: 'Break 2'},
+    { label: 'Work 1' },
+    { label: 'Break 1' },
+    { label: 'Work 2' },
+    { label: 'Break 2' },
   ];
+
 
   private timer: any = null;
 
@@ -38,6 +40,32 @@ export class CountdownComponent implements OnDestroy {
   customTimeInput = '';
   customWorkTimeSet: number | null = null;
   hasStarted = false;
+
+  breakDurationMinutes(): number {
+    const [mins, secs] = this.breakInput.split(':').map(Number);
+    if (isNaN(mins) && isNaN(secs)) return 0;
+    return mins + secs / 60;
+  }
+
+  breakDurationSeconds(): number {
+    const [mins, secs] = this.breakInput.split(':').map(Number);
+    if (isNaN(mins) && isNaN(secs)) return 0;
+    return mins * 60 + secs;
+  }
+
+  onBreakInputBlur() {
+    const parts = this.breakInput.split(':');
+    let min = Number(parts[0]) || 0;
+    let sec = Number(parts[1]) || 0;
+
+    if (sec > 59) {
+      min += Math.floor(sec / 60);
+      sec = sec % 60;
+    }
+
+    this.breakInput = `${min}:${sec.toString().padStart(2, '0')}`;
+
+  }
 
   onTimeClick() {
     if (!this.isRunning) {
@@ -125,7 +153,7 @@ export class CountdownComponent implements OnDestroy {
   }
 
   generateTimelineEvents() {
-    this.timelineEvents = Array.from({length: this.intervals}, (_, i) => ({
+    this.timelineEvents = Array.from({ length: this.intervals }, (_, i) => ({
       label: `${i + 1}`
     }));
   }
