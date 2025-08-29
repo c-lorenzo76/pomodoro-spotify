@@ -11,17 +11,17 @@
         <div *ngIf="p.items.length > 0; else noPlaylists">
           <ul class="list-none p-0 m-0">
             <li *ngFor="let playlist of p.items">
-              <div class="flex items-center p-3 mx-2.5 rounded-lg hover:bg-zinc-700 cursor-pointer transition gap-3"
-                (click)="goToPlaylist(playlist.id)"
-                [ngClass]="{ 'bg-zinc-700': selectedPlaylistId === playlist.id }"
-                >
+              <!-- Have to change something here to make it show ellipsis when the text is too wide -->
+              <div
+                class="truncate flex items-center p-3 mx-2.5 hover:bg-zinc-700 cursor-pointer transition gap-3"
+                (click)="goToPlaylist(playlist.id)" [ngClass]="{ 'bg-zinc-700': selectedPlaylistId === playlist.id }">
                 <img *ngIf="playlist.images.length" [ngSrc]="playlist.images[0].url" [width]="40" [height]="40"
                   alt="Playlist Cover" class="w-14 h-14 rounded object-cover" />
-                <div class="flex flex-col">
+                <div class="flex flex-col min-w-0">
                   <!-- Have it also pass an image which is the playlist.images[0].url -->
                   <!-- Have it pass to curr-playlist then i make another call to api for 'Get playlist' -->
                   <!-- <span class="text-sm text-gray-500 truncate">{{ playlist.id }}</span> -->
-                  <span class="text-lg truncate text-white">{{ playlist.name }}</span>
+                  <span class="text-lg truncate text-white ">{{ playlist.name }}</span>
                   <span class="text-md text-gray-400 truncate">
                     {{ playlist.owner.display_name }}
                   </span>

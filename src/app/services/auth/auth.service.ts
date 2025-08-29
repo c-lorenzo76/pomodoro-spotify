@@ -89,6 +89,7 @@ export class AuthService {
       code_challenge_method: 'S256',
       code_challenge: codeChallenge,
       redirect_uri: this.redirectUri,
+      show_dialog: 'true'
     };
 
     authUrl.search = new URLSearchParams(params).toString();
@@ -155,7 +156,7 @@ export class AuthService {
   async getProfile(){
     let accessToken = localStorage.getItem('access_token')
     if(!accessToken) throw new Error('No access token');
-
+    
     const response = await fetch('https://api.spotify.com/v1/me', {
       headers: {
         Authorization: 'Bearer ' + accessToken

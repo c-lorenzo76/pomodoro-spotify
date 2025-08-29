@@ -6,12 +6,12 @@
 
     <div class="flex-1 overflow-y-auto">
       <div class="flex flex-col h-full w-full">
-        <router-outlet></router-outlet>
+        <app-dashboard (playPlaylist)="onPlayPlaylist($event)"></app-dashboard>
       </div>
     </div>
   </div>
 
-  <app-player></app-player>
+  <app-player [playlistUri]="selectedPlaylistUri" ></app-player>
 </div>
 
 

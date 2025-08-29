@@ -9,8 +9,7 @@ import { TimelineModule } from 'primeng/timeline';
   imports: [
     FormsModule,
     TimelineModule,
-    NgIf,
-    NgClass,
+    NgIf
   ],
   templateUrl: './countdown.component.html',
 
@@ -136,7 +135,7 @@ export class CountdownComponent implements OnDestroy {
       this.isWorkSession = !this.isWorkSession;
       this.timeLeft = this.isWorkSession
         ? this.customWorkTimeSet ?? this.workDuration * 60
-        : this.breakDuration * 60;
+        : this.breakDurationSeconds();
 
       if (!this.isWorkSession) {
         this.intervalIndex++;
@@ -156,6 +155,11 @@ export class CountdownComponent implements OnDestroy {
     this.timelineEvents = Array.from({ length: this.intervals }, (_, i) => ({
       label: `${i + 1}`
     }));
+  }
+
+  isBreakCompleted(index: number): boolean {
+    // A break is completed if intervalIndex > index and index is odd (break intervals)
+    return index % 2 === 1 && this.intervalIndex > index;
   }
 
   ngOnDestroy() {

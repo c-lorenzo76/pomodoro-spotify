@@ -9,6 +9,8 @@ import {UserService} from '../../services/user/user.service';
 import {SubNavbarComponent} from '../../components/sub-navbar/sub-navbar.component';
 import {CountdownComponent} from '../../components/countdown/countdown.component';
 import {CurrPlaylistComponent} from '../../components/curr-playlist/curr-playlist.component';
+import { Output, EventEmitter } from '@angular/core';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +29,8 @@ export class DashboardComponent {
   playlists: UserPlaylists | null = null;
   following: UserFollowing | null = null;
   selectedPlaylistId: string | null = null;
+  selectedPlaylistUri: string | null = null;
+  @Output() playPlaylist = new EventEmitter<string>();
 
 
   constructor(
@@ -35,6 +39,11 @@ export class DashboardComponent {
     private authService: AuthService,
     private userService: UserService
   ) {}
+
+  onPlayPlaylist(uri: string): void {
+    this.selectedPlaylistUri = uri;
+    this.playPlaylist.emit(uri); 
+  }
 
   async ngOnInit(): Promise<void> {
     const [userRes, playlistsRes, followingRes] = await Promise.allSettled([

@@ -10,13 +10,13 @@
 
   <div class="flex flex-col items-center justify-center w-1/3">
     <div class="flex space-x-6">
-      <button class="hover:text-green-400">
+      <button class="hover:text-green-400" (click)="skipToPrevious()">
         <i class="pi pi-step-backward"></i>
       </button>
-      <button class="hover:text-green-500 text-xl">
+      <button class="hover:text-green-500 text-xl" (click)="togglePlay()">
         <i class="pi pi-play-circle"></i>
       </button>
-      <button class="hover:text-green-400">
+      <button class="hover:text-green-400" (click)="skipToNext()">
         <i class="pi pi-step-forward"></i>
       </button>
     </div>

@@ -2,19 +2,22 @@
   <h2 class="text-2xl font-semibold text-gray-800">Pomodoro Timer</h2>
   <h4 class="text-md font-semibold text-gray-600">Breaks</h4>
 
+  <!-- Want to make this change the color of the span to that specified color when it is done with the interval -->
   <p-timeline [value]="timelineEvents" layout="horizontal" align="top">
-    <ng-template pTemplate="content" let-event let-i="index">
-      <span [ngClass]="{ 'text-gray-900': i === intervalIndex }" class="ml-1">
-        {{ event.label }}
+    <ng-template pTemplate="marker" #marker let-event let-i="index">
+      <span class="ml-1 flex w-8 h-8 items-center justify-center rounded-full z-10 shadow-sm" 
+      [style]="'background-color: ' + (i < intervalIndex ? '#607D8B' : '#D1D5DB') + '; color: ' + (i < intervalIndex ? '#fff' : '#374151')">
+        <i class="pi pi-check"></i>
       </span>
     </ng-template>
   </p-timeline>
 
+
   <div class="flex gap-4 justify-center">
     <div>
-      <label class="block text-sm font-medium text-gray-700">Break (mins)</label>
-      <input type="number" [(ngModel)]="breakDuration"
-             class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" min="1">
+      <label class="block text-sm font-medium text-gray-700">Break</label>
+      <input type="text" [(ngModel)]="breakInput" (blur)="onBreakInputBlur()" placeholder="mm:ss"
+        class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" />
     </div>
 
     <!-- Need to make this to be similar to the timeInput where it takes mins:secs -->

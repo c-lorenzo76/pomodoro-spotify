@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { PlaylistSongs } from '../../interfaces/playlistSongs.interface';
 import { UserService } from '../../services/user/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,6 +26,8 @@ export class CurrPlaylistComponent implements OnChanges {
   playlistSongs: PlaylistSongs | null = null;
   playlistOwnerImageUrl: string | null = null;
   scrollHeight = '470px';
+  @Output() playPlaylist = new EventEmitter<string>();
+
 
   constructor(
     private router: Router,
@@ -33,7 +35,11 @@ export class CurrPlaylistComponent implements OnChanges {
     private userService: UserService
   ) { }
 
-
+  startPlaylist(uri: string | undefined){
+    if(uri){
+      this.playPlaylist.emit(uri);
+    }
+  }
 
   getPlaylistDuration(): string {
     if (!this.playlistSongs) {

@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div *ngIf="playlistSongs" class="flex flex-row items-start">
+    <div *ngIf="playlistSongs" class="flex flex-row items-start ">
       <img [ngSrc]="playlistSongs.images[0].url" alt="Avatar" class="mr-3 mb-3 lg:mb-0 w-32 h-32 rounded" height="70"
         width="71" />
 
@@ -34,6 +34,13 @@
         </div>
       </div>
     </div>
+
+    <div class="">
+      <button (click)="startPlaylist(playlistSongs?.uri)" type="button" class="rounded-full ">
+        <i class="pi pi-play-circle text-green-500 cursor-pointer" style="font-size: 4rem;"></i>
+      </button>
+    </div>
+
   </div>
 
   <div class="mt-6">
@@ -69,7 +76,8 @@
             </span>
             <div class="hidden group-hover:block flex items-center justify-center">
               <!-- <i class="pi pi-play text-green-500" style="font-size: 1rem;"></i> -->
-              <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 24 24" style="width: 1rem; height: 1rem; color: #1DB954;">
+              <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 24 24"
+                style="width: 1rem; height: 1rem; color: #1DB954;">
                 <path
                   d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606">
                 </path>

@@ -1,4 +1,6 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { PlayerService } from '../../services/player/player.service';
+
 
 declare global {
   interface Window {
@@ -16,16 +18,57 @@ declare global {
   templateUrl: './player.component.html',
 
 })
-export class PlayerComponent implements OnInit, OnDestroy {
+export class PlayerComponent implements OnInit, OnDestroy, OnChanges {
 
   private player: any;
   private deviceId: string | null = null;
   private token: string | null = null;
   isReady: boolean = false;
   isPaused: boolean = true;
+  @Input() playlistUri: string | null = null;
+  private pendingPlaylistUri: string | null = null;
 
 
-  constructor(private ngZone: NgZone) { }
+  constructor(private playerService: PlayerService, private ngZone: NgZone) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['playlistUri'] && this.playlistUri) {
+      this.pendingPlaylistUri = this.playlistUri;
+    }
+    // if (changes['playlistUri'] && this.playlistUri && this.isReady && this.deviceId) {
+    //   this.playerService.start_resume_Playback(this.playlistUri, this.deviceId);
+    // }
+  }
+
+  async playPlaylist(uri: string) {
+    if (!this.token || !this.deviceId) return;
+  }
+
+  skipToNext(): void {
+    if (this.deviceId) {
+      this.playerService.skip2Next(this.deviceId)
+        .catch(error => {
+          console.error('Error skipping to next track:', error);
+        });
+    }
+  }
+
+  togglePlay(): void {
+    if (this.player) {
+      this.player.togglePlay();
+      this.isPaused = !this.isPaused;
+    }
+  }
+
+  skipToPrevious(): void {
+    if (this.deviceId) {
+      this.playerService.skip2Previous(this.deviceId)
+        .catch(error => {
+          console.error('Error skipping to previous track:', error);
+        });
+    }
+  }
+
 
 
   ngOnInit(): void {
@@ -37,6 +80,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     }
 
     window.onSpotifyWebPlaybackSDKReady = () => {
+      if (this.player) return;
+
       this.player = new window.Spotify.Player({
         name: 'Web Playback SDK Quick Start Player',
         getOAuthToken: (cb: (token: string) => void) => { cb(this.token!); },
@@ -48,11 +93,16 @@ export class PlayerComponent implements OnInit, OnDestroy {
           console.log('Ready with Device ID', device_id);
           this.deviceId = device_id;
           this.isReady = true;
+
+          if (this.pendingPlaylistUri && this.deviceId) {
+            this.playerService.start_resume_Playback(this.pendingPlaylistUri, this.deviceId);
+            this.pendingPlaylistUri = null;
+          }
         });
 
         this.transferPlaybackHere(device_id);
       });
-
+      
       this.player.addListener('not_ready', ({ device_id }: any) => {
         console.log('Device ID has gone offline', device_id);
         this.deviceId = null;
@@ -73,18 +123,18 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
       this.player.connect();
     };
+
+    if (!document.getElementById('spotify-sdk')) {
+      const script = document.createElement('script');
+      script.id = 'spotify-sdk';
+      script.src = 'https://sdk.scdn.co/spotify-player.js';
+      document.body.appendChild(script);
+    }
   }
 
   ngOnDestroy(): void {
     if (this.player) {
       this.player.disconnect();
-    }
-  }
-
-  togglePlay(): void {
-    if (this.player){
-      this.player.togglePlay();
-      this.isPaused = !this.isPaused;
     }
   }
 
