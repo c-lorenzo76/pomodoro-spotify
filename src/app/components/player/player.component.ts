@@ -34,11 +34,17 @@ export class PlayerComponent implements OnInit, OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['playlistUri'] && this.playlistUri) {
       this.pendingPlaylistUri = this.playlistUri;
+      if (this.isReady && this.deviceId && this.pendingPlaylistUri) {
+        this.playerService.start_resume_Playback(this.pendingPlaylistUri, this.deviceId);
+        this.pendingPlaylistUri = null;
+      }
+      // if (changes['playlistUri'] && this.playlistUri && this.isReady && this.deviceId) {
+      //   this.playerService.start_resume_Playback(this.playlistUri, this.deviceId);
+      // }
+
     }
-    // if (changes['playlistUri'] && this.playlistUri && this.isReady && this.deviceId) {
-    //   this.playerService.start_resume_Playback(this.playlistUri, this.deviceId);
-    // }
   }
+
 
   async playPlaylist(uri: string) {
     if (!this.token || !this.deviceId) return;
@@ -102,7 +108,7 @@ export class PlayerComponent implements OnInit, OnDestroy, OnChanges {
 
         this.transferPlaybackHere(device_id);
       });
-      
+
       this.player.addListener('not_ready', ({ device_id }: any) => {
         console.log('Device ID has gone offline', device_id);
         this.deviceId = null;

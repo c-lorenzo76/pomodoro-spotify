@@ -1,110 +1,93 @@
-<div class="bg-gray-100  p-4 h-full ">
-  <div class="flex flex-col lg:flex-row lg:justify-between items-start mt-6">
-    <!-- // Have a whole div block that is for ngif the playlist has been selected otherwise show a skeleton. So one div for selected another for no selected -->
-    <div *ngIf="!playlistSongs" class="flex flex-row items-start">
-      <p-skeleton size="6rem" shape="square" animation="none" />
-      <div class="flex flex-col ml-2 gap-1">
-        <p-skeleton width="10rem" height="2rem" animation="none" />
-        <p-skeleton width="10rem" height="2rem" animation="none" />
-        <div class="flex items-center gap-x-1">
-          <p-skeleton width="10rem" animation="none" height="1.5rem" />
-        </div>
-
+<div class="h-full overflow-hidden rounded-2xl bg-[#181818] text-white shadow-xl ring-1 ring-white/5 flex flex-col">
+  <!-- Header -->
+  <div class="bg-gradient-to-b from-[#1ED760]/20 to-transparent p-6 sm:p-8">
+    <!-- Nothing selected yet -->
+    <div *ngIf="!playlistSongs" class="flex items-end gap-5">
+      <div class="flex h-32 w-32 flex-shrink-0 items-center justify-center rounded-lg bg-white/5 shadow-lg">
+        <i class="pi pi-headphones text-gray-500" style="font-size: 2.5rem"></i>
+      </div>
+      <div class="min-w-0">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Playlist</span>
+        <h2 class="mt-1 text-3xl font-bold tracking-tight text-white/80">No playlist selected</h2>
+        <p class="mt-2 text-sm text-gray-400">Pick one from your library to focus with.</p>
       </div>
     </div>
 
-    <div *ngIf="playlistSongs" class="flex flex-row items-start ">
-      <img [ngSrc]="playlistSongs.images[0].url" alt="Avatar" class="mr-3 mb-3 lg:mb-0 w-32 h-32 rounded" height="70"
-        width="71" />
+    <!-- Selected playlist -->
+    <div *ngIf="playlistSongs" class="flex flex-col sm:flex-row sm:items-end gap-5">
+      <img *ngIf="playlistSongs.images?.length" [src]="playlistSongs.images[0].url" alt="Playlist cover"
+        class="h-32 w-32 sm:h-40 sm:w-40 flex-shrink-0 rounded-lg object-cover shadow-2xl shadow-black/50" />
 
-      <div class="ml-2">
-        <span *ngIf="playlistSongs?.public" class="text-gray-900 font-medium text-md">Public Playlist</span>
-        <span *ngIf="!playlistSongs?.public" class="text-gray-900 font-medium text-md">Private Playlist</span>
-        <br />
-        <span class="text-gray-900 font-medium text-5xl lg:text-4xl xl:text-5xl">{{ playlistSongs.name }}</span>
-        <br />
-        <div class="flex items-center mt-4 gap-x-1">
-          <img *ngIf="playlistOwnerImageUrl" [src]="playlistOwnerImageUrl" alt="Owner Avatar"
-            class="w-8 h-8 rounded-full " />
-          <span> {{ playlistSongs.owner.display_name }}</span>
-          <span class="text-gray-400">•</span>
+      <div class="min-w-0 flex-1">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-300">
+          {{ playlistSongs.public ? 'Public Playlist' : 'Private Playlist' }}
+        </span>
+        <h2 class="mt-1 text-3xl sm:text-4xl xl:text-5xl font-bold tracking-tight truncate" [title]="playlistSongs.name">
+          {{ playlistSongs.name }}
+        </h2>
+        <div class="mt-3 flex flex-wrap items-center gap-x-1.5 text-sm text-gray-300">
+          <img *ngIf="playlistOwnerImageUrl" [src]="playlistOwnerImageUrl" alt="Owner avatar"
+            class="h-6 w-6 rounded-full object-cover" />
+          <span class="font-semibold text-white">{{ playlistSongs.owner.display_name }}</span>
+          <span class="text-gray-500">•</span>
           <span>{{ playlistSongs.tracks.total }} songs</span>
-          <span class="text-gray-400">•</span>
+          <span class="text-gray-500">•</span>
           <span>{{ getPlaylistDuration() }}</span>
         </div>
       </div>
-    </div>
 
-    <div class="">
-      <button (click)="startPlaylist(playlistSongs?.uri)" type="button" class="rounded-full ">
-        <i class="pi pi-play-circle text-green-500 cursor-pointer" style="font-size: 4rem;"></i>
+      <button (click)="startPlaylist(playlistSongs.uri)" type="button" aria-label="Play playlist"
+        class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#1ED760] text-black shadow-lg shadow-black/40 transition hover:scale-105 hover:bg-[#3BE477] active:scale-100">
+        <i class="pi pi-play ml-0.5" style="font-size: 1.3rem"></i>
       </button>
     </div>
-
   </div>
 
-  <div class="mt-6">
+  <!-- Songs -->
+  <div class="flex-1 px-2 sm:px-4 pb-4">
+    <div class="grid grid-cols-[2rem_1fr_4rem] 2xl:grid-cols-[2rem_1fr_1fr_4rem] items-center gap-4 border-b border-white/10 px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+      <span class="text-center">#</span>
+      <span>Title</span>
+      <span class="hidden 2xl:block">Album</span>
+      <span class="flex justify-end"><i class="pi pi-clock"></i></span>
+    </div>
 
-    <p-table selectionMode="single" [value]="playlistSongs?.tracks?.items || []" [scrollable]="true"
-      [scrollHeight]="scrollHeight" [tableStyle]="{'table-layout': 'fixed'}">
-      <ng-template #caption>
-        <div class="flex items-center justify-between">
-          <span class="text-xl font-bold">Songs</span>
+    <div class="mt-2 overflow-y-auto" [style.max-height]="scrollHeight">
+      <!-- Loading placeholders before a playlist is picked -->
+      <ng-container *ngIf="!playlistSongs">
+        <div *ngFor="let _ of [1, 2, 3, 4, 5]"
+          class="grid grid-cols-[2rem_1fr_4rem] items-center gap-4 px-3 py-2">
+          <div class="mx-auto h-3 w-3 rounded bg-white/5"></div>
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded bg-white/5"></div>
+            <div class="space-y-2">
+              <div class="h-3 w-32 rounded bg-white/5"></div>
+              <div class="h-2.5 w-20 rounded bg-white/5"></div>
+            </div>
+          </div>
+          <div class="ml-auto h-3 w-8 rounded bg-white/5"></div>
         </div>
-      </ng-template>
-      <ng-template pTemplate="header">
-        <tr>
-          <th class="text-gray-400 w-8">#</th>
-          <th class="text-gray-400">Title</th>
-          <th class="hidden 2xl:table-cell text-gray-400">Album</th>
-          <th class="text-gray-400 w-18">
-            <svg data-encore-id="icon" role="img" aria-hidden="true"
-              class="e-91000-icon e-91000-baseline w-5 h-5 text-gray-400" viewBox="0 0 16 16"
-              style="--encore-icon-height: var(--encore-graphic-size-decorative-smaller); --encore-icon-width: var(--encore-graphic-size-decorative-smaller);">
-              <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"></path>
-              <path d="M8 3.25a.75.75 0 0 1 .75.75v3.25H11a.75.75 0 0 1 0 1.5H7.25V4A.75.75 0 0 1 8 3.25"></path>
-            </svg>
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-song let-rowIndex="rowIndex">
-        <!-- <tr class="hover:bg-gray-200 cursor-pointer" (click)="playSong(song.track.uri)"> -->
-        <tr class="hover:cursor-pointer group">
-          <td class="border border-gray-300">
-            <span class="group-hover:hidden">
-              {{ rowIndex + 1 }}
-            </span>
-            <div class="hidden group-hover:block flex items-center justify-center">
-              <!-- <i class="pi pi-play text-green-500" style="font-size: 1rem;"></i> -->
-              <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 24 24"
-                style="width: 1rem; height: 1rem; color: #1DB954;">
-                <path
-                  d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606">
-                </path>
-              </svg>
-            </div>
-          </td>
-          <td>
-            <div class="flex items-center gap-2">
-              <img *ngIf="song.track.album.images.length" [src]="song.track.album.images[0].url"
-                class="w-14 h-14 rounded" />
-              <div class="flex flex-col min-w-0">
-                <span class="truncate">
-                  {{ song.track.name }}
-                </span>
-                <span class="truncate">
-                  {{ getArtistNames(song) }}
-                </span>
-              </div>
+      </ng-container>
 
-            </div>
-          </td>
-          <td class="hidden 2xl:table-cell">{{ song.track.album.name }}</td>
-          <td> {{ formatDuration(song.track.duration_ms) }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
+      <div *ngFor="let song of playlistSongs?.tracks?.items || []; let rowIndex = index"
+        class="group grid grid-cols-[2rem_1fr_4rem] 2xl:grid-cols-[2rem_1fr_1fr_4rem] items-center gap-4 rounded-md px-3 py-2 transition hover:bg-white/10 cursor-pointer">
+        <div class="flex justify-center text-sm tabular-nums text-gray-400">
+          <span class="group-hover:hidden">{{ rowIndex + 1 }}</span>
+          <i class="pi pi-play hidden group-hover:inline text-white" style="font-size: 0.8rem"></i>
+        </div>
 
+        <div class="flex min-w-0 items-center gap-3">
+          <img *ngIf="song.track.album.images?.length" [src]="song.track.album.images[song.track.album.images.length - 1].url"
+            alt="" class="h-10 w-10 flex-shrink-0 rounded object-cover" />
+          <div class="flex min-w-0 flex-col">
+            <span class="truncate font-medium text-white">{{ song.track.name }}</span>
+            <span class="truncate text-sm text-gray-400 group-hover:text-gray-300">{{ getArtistNames(song) }}</span>
+          </div>
+        </div>
+
+        <span class="hidden 2xl:block truncate text-sm text-gray-400 group-hover:text-gray-300">{{ song.track.album.name }}</span>
+        <span class="text-right text-sm tabular-nums text-gray-400">{{ formatDuration(song.track.duration_ms || 0) }}</span>
+      </div>
+    </div>
   </div>
-
 </div>

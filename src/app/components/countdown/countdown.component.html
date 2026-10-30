@@ -1,81 +1,104 @@
-<div class="mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
-  <h2 class="text-2xl font-semibold text-gray-800">Pomodoro Timer</h2>
-  <h4 class="text-md font-semibold text-gray-600">Breaks</h4>
+<div class="h-full rounded-2xl bg-[#181818] p-6 sm:p-8 text-white shadow-xl ring-1 ring-white/5 flex flex-col">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold tracking-tight">Pomodoro Timer</h2>
+    <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider"
+      [class]="isWorkSession ? 'bg-[#1ED760]/10 text-[#1ED760]' : 'bg-sky-400/10 text-sky-300'">
+      <span class="h-1.5 w-1.5 rounded-full" [class]="isWorkSession ? 'bg-[#1ED760]' : 'bg-sky-300'"
+        [class.animate-pulse]="isRunning"></span>
+      {{ isWorkSession ? 'Focus' : 'Break' }}
+    </span>
+  </div>
 
-  <!-- Want to make this change the color of the span to that specified color when it is done with the interval -->
-  <p-timeline [value]="timelineEvents" layout="horizontal" align="top">
-    <ng-template pTemplate="marker" #marker let-event let-i="index">
-      <span class="ml-1 flex w-8 h-8 items-center justify-center rounded-full z-10 shadow-sm" 
-      [style]="'background-color: ' + (i < intervalIndex ? '#607D8B' : '#D1D5DB') + '; color: ' + (i < intervalIndex ? '#fff' : '#374151')">
-        <i class="pi pi-check"></i>
+  <!-- Timer ring -->
+  <div class="relative mx-auto my-8 h-64 w-64 sm:h-72 sm:w-72">
+    <svg viewBox="0 0 100 100" class="h-full w-full -rotate-90" aria-hidden="true">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5" />
+      <circle cx="50" cy="50" r="45" fill="none" stroke-width="5" stroke-linecap="round"
+        [attr.stroke]="isWorkSession ? '#1ED760' : '#7DD3FC'"
+        [attr.stroke-dasharray]="ringCircumference"
+        [attr.stroke-dashoffset]="ringCircumference * (1 - progress)"
+        class="transition-[stroke-dashoffset] duration-1000 ease-linear" />
+    </svg>
+
+    <!-- Click the time to edit it (only before the timer has started) -->
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+      <ng-container *ngIf="!isEditingTime; else editMode">
+        <button type="button" (click)="onTimeClick()" [disabled]="hasStarted"
+          class="group/time relative rounded-xl px-3 py-1 text-6xl sm:text-7xl font-bold tabular-nums tracking-tight transition enabled:hover:bg-white/5 enabled:cursor-pointer disabled:cursor-default"
+          [title]="hasStarted ? '' : 'Click to edit'" [attr.aria-label]="hasStarted ? null : 'Edit focus time'">
+          {{ formatTime(displaySeconds) }}
+          <i *ngIf="!hasStarted"
+            class="pi pi-pencil absolute -right-5 top-1/2 -translate-y-1/2 text-gray-500 transition group-hover/time:text-[#1ED760]"
+            style="font-size: 1rem"></i>
+        </button>
+      </ng-container>
+
+      <ng-template #editMode>
+        <input type="text" [(ngModel)]="customTimeInput" (blur)="onTimeInputBlur()" (keydown.enter)="onTimeInputBlur()"
+          class="w-48 rounded-xl bg-white/10 px-3 py-1 text-center text-6xl sm:text-7xl font-bold tabular-nums tracking-tight text-white outline-none ring-2 ring-[#1ED760]"
+          autofocus />
+      </ng-template>
+
+      <span class="mt-2 text-sm text-gray-400">
+        Session {{ intervalIndex < intervals ? intervalIndex + 1 : intervals }} of {{ intervals }}
       </span>
-    </ng-template>
-  </p-timeline>
-
-
-  <div class="flex gap-4 justify-center">
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Break</label>
-      <input type="text" [(ngModel)]="breakInput" (blur)="onBreakInputBlur()" placeholder="mm:ss"
-        class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" />
-    </div>
-
-    <!-- Need to make this to be similar to the timeInput where it takes mins:secs -->
-    <!-- <div>
-      <label class="block text-sm font-medium text-gray-700">Break (mins)</label>
-      <input type="text" [(ngModel)]="breakInput" (blur)="onBreakInputBlur()" placeholder="mm:ss"
-        class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" />
-    </div> -->
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Intervals</label>
-      <input type="number" [(ngModel)]="intervals" (ngModelChange)="generateTimelineEvents()"
-        class="mt-1 block w-full border border-gray-300 rounded px-2 py-1" min="1" />
     </div>
   </div>
 
-  <!-- Have it when you select the minutes or secs it highlights or changes the background color to let user know -->
-  <div class="flex justify-center items-center text-6xl font-mono text-gray-900 cursor-pointer" (click)="onTimeClick()">
-    <ng-container *ngIf="!isEditingTime; else editMode">
-      {{ formatTime(timeLeft) }}
-    </ng-container>
-
-    <ng-template #editMode>
-      <input type="text" [(ngModel)]="customTimeInput" (blur)="onTimeInputBlur()" (keydown.enter)="onTimeInputBlur()"
-        class="text-6xl font-mono text-gray-900 w-full text-center border border-gray-400 focus:outline-none"
-        autofocus />
-    </ng-template>
+  <!-- Session progress -->
+  <div class="flex items-center justify-center gap-2" aria-label="Completed sessions">
+    <span *ngFor="let event of timelineEvents; let i = index"
+      class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition"
+      [class]="i < intervalIndex ? 'bg-[#1ED760] text-black' : (i === intervalIndex && hasStarted ? 'bg-white/15 text-white ring-2 ring-[#1ED760]/60' : 'bg-white/5 text-gray-500')">
+      <i *ngIf="i < intervalIndex" class="pi pi-check" style="font-size: 0.7rem"></i>
+      <ng-container *ngIf="i >= intervalIndex">{{ i + 1 }}</ng-container>
+    </span>
   </div>
 
-  <!--  <div class="flex justify-center items-center text-6xl font-mono text-gray-900">-->
-  <!--    {{ formatTime(timeLeft) }}-->
-  <!--  </div>-->
-
-  <div class="flex justify-center gap-4">
-    <!-- Start button: only if timer hasn't started -->
+  <!-- Controls -->
+  <div class="mt-8 flex justify-center gap-3">
     <button *ngIf="!hasStarted" (click)="startTimer()"
-      class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-      Start
+      class="inline-flex items-center gap-2 rounded-full bg-[#1ED760] px-8 py-3 font-bold text-black transition hover:scale-105 hover:bg-[#3BE477] active:scale-100">
+      <i class="pi pi-play"></i> Start
     </button>
 
-    <!-- Pause + Reset buttons: shown when running -->
     <ng-container *ngIf="hasStarted && isRunning">
-      <button (click)="pauseTimer()" class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500">
-        Pause
+      <button (click)="pauseTimer()"
+        class="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3 font-bold text-black transition hover:scale-105 active:scale-100">
+        <i class="pi pi-pause"></i> Pause
       </button>
-      <button (click)="resetTimer()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-        Reset
+      <button (click)="resetTimer()"
+        class="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 font-semibold text-white transition hover:border-white">
+        <i class="pi pi-refresh"></i> Reset
       </button>
     </ng-container>
 
-    <!-- Unpause + Reset buttons: shown when paused -->
     <ng-container *ngIf="hasStarted && !isRunning && timeLeft > 0">
-      <button (click)="startTimer()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-        Resume
+      <button (click)="startTimer()"
+        class="inline-flex items-center gap-2 rounded-full bg-[#1ED760] px-8 py-3 font-bold text-black transition hover:scale-105 hover:bg-[#3BE477] active:scale-100">
+        <i class="pi pi-play"></i> Resume
       </button>
-      <button (click)="resetTimer()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-        Reset
+      <button (click)="resetTimer()"
+        class="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 font-semibold text-white transition hover:border-white">
+        <i class="pi pi-refresh"></i> Reset
       </button>
     </ng-container>
+  </div>
+
+  <!-- Settings -->
+  <div class="mt-auto pt-8">
+    <div class="grid grid-cols-2 gap-4 rounded-xl bg-black/20 p-4">
+      <label class="block">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Break</span>
+        <input type="text" [(ngModel)]="breakInput" (blur)="onBreakInputBlur()" placeholder="mm:ss"
+          class="mt-1.5 block w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white tabular-nums outline-none transition focus:border-[#1ED760] focus:bg-white/10" />
+      </label>
+      <label class="block">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Intervals</span>
+        <input type="number" [(ngModel)]="intervals" (ngModelChange)="generateTimelineEvents()" min="1"
+          class="mt-1.5 block w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white tabular-nums outline-none transition focus:border-[#1ED760] focus:bg-white/10" />
+      </label>
+    </div>
   </div>
 </div>

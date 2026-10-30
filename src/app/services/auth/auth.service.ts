@@ -6,8 +6,8 @@ import { Injectable } from '@angular/core';
 export class AuthService {
 
   // use environment.ts
-  private clientId = '';
-  private redirectUri = 'http://localhost:4200/callback';
+  private clientId = 'ed328b20d0424532a0b087d0aea134e1';
+  private redirectUri = 'http://127.0.0.1:4200/callback';
 
   private authorizationEndpoint = 'https://accounts.spotify.com/authorize';
   private tokenEndpoint = 'https://accounts.spotify.com/api/token';

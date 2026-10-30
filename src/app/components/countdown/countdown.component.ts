@@ -1,14 +1,13 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { JsonPipe, NgClass, NgIf } from '@angular/common';
-import { TimelineModule } from 'primeng/timeline';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-countdown',
   standalone: true,
   imports: [
     FormsModule,
-    TimelineModule,
+    NgFor,
     NgIf
   ],
   templateUrl: './countdown.component.html',
@@ -40,6 +39,27 @@ export class CountdownComponent implements OnDestroy {
   customWorkTimeSet: number | null = null;
   hasStarted = false;
 
+  // Circumference of the progress ring (r = 45 in the SVG)
+  readonly ringCircumference = 2 * Math.PI * 45;
+
+  // Full length of the current session in seconds
+  get sessionTotalSeconds(): number {
+    return this.isWorkSession
+      ? this.customWorkTimeSet ?? this.workDuration * 60
+      : this.breakDurationSeconds();
+  }
+
+  // Before starting, show the full work time instead of 00:00
+  get displaySeconds(): number {
+    return this.hasStarted || this.timeLeft > 0 ? this.timeLeft : this.sessionTotalSeconds;
+  }
+
+  // 1 = full ring, 0 = empty
+  get progress(): number {
+    const total = this.sessionTotalSeconds;
+    return total ? Math.min(1, this.displaySeconds / total) : 0;
+  }
+
   breakDurationMinutes(): number {
     const [mins, secs] = this.breakInput.split(':').map(Number);
     if (isNaN(mins) && isNaN(secs)) return 0;
@@ -67,9 +87,10 @@ export class CountdownComponent implements OnDestroy {
   }
 
   onTimeClick() {
-    if (!this.isRunning) {
+    // The time can only be edited before the timer starts (Reset unlocks it again)
+    if (!this.hasStarted) {
       this.isEditingTime = true;
-      this.customTimeInput = this.formatTime(this.timeLeft);
+      this.customTimeInput = this.formatTime(this.displaySeconds);
     }
   }
 

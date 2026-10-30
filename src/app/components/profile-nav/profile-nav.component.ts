@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Skeleton} from 'primeng/skeleton';
 import {User} from '../../interfaces/user.interface';
-import {NgIf, NgOptimizedImage} from '@angular/common';
+import {NgIf} from '@angular/common';
 import {UserPlaylists} from '../../interfaces/playlists.interface';
 import {UserFollowing} from '../../interfaces/followed.interface';
 
@@ -10,9 +9,7 @@ import {UserFollowing} from '../../interfaces/followed.interface';
   selector: 'app-profile-nav',
   standalone: true,
   imports: [
-    Skeleton,
-    NgIf,
-    NgOptimizedImage
+    NgIf
   ],
   templateUrl: './profile-nav.component.html',
 

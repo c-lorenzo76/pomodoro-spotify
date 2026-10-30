@@ -48,13 +48,8 @@ export class PlayerService {
     let accessToken = localStorage.getItem('access_token');
     if (!accessToken) throw new Error('No access token');
 
-    const body: any = {
-      device_id: deviceId
-    };
-
-    const response = await fetch(`${this.baseUrl}/pause`, {
+    const response = await fetch(`${this.baseUrl}/pause?device_id=${deviceId}`, {
       method: 'PUT',
-      body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + accessToken,
@@ -71,13 +66,8 @@ export class PlayerService {
     let accessToken = localStorage.getItem('access_token');
     if (!accessToken) throw new Error('No access token');
 
-    const body: any = {
-      device_id: deviceId
-    };
-
-    const response = await fetch(`${this.baseUrl}/next`, {
+    const response = await fetch(`${this.baseUrl}/next?device_id=${deviceId}`, {
       method: 'POST',
-      body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + accessToken,
@@ -94,13 +84,8 @@ export class PlayerService {
     let accessToken = localStorage.getItem('access_token');
     if (!accessToken) throw new Error('No access token');
 
-    const body: any = {
-      device_id: deviceId
-    };
-
-    const response = await fetch(`${this.baseUrl}/previous`, {
+    const response = await fetch(`${this.baseUrl}/previous?device_id=${deviceId}`, {
       method: 'POST',
-      body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + accessToken,

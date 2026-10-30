@@ -1,12 +1,12 @@
 <div class="flex flex-col h-screen">
   <app-navbar [user]="user"></app-navbar>
 
-  <div class="flex flex-1 overflow-hidden bg-gray-100">
+  <div class="flex flex-1 overflow-hidden bg-[#121212]">
     <app-sidebar (playlistSelected)="onPlaylistSelected($event)" [playlists]="playlists"></app-sidebar>
 
     <div class="flex-1 overflow-y-auto">
       <div class="flex flex-col h-full w-full">
-        <app-dashboard (playPlaylist)="onPlayPlaylist($event)"></app-dashboard>
+        <app-dashboard class="block flex-1" (playPlaylist)="onPlayPlaylist($event)"></app-dashboard>
       </div>
     </div>
   </div>

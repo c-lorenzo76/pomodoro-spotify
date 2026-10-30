@@ -24,7 +24,7 @@ export interface User {
   email: string;
   explicit_content: ExplicitContent;
   external_urls: ExternalUrls;
-  followers: Followers;
+  followers?: Followers; // removed by Spotify in Feb 2026
   href: string;
   id: string;
   images: Image[];

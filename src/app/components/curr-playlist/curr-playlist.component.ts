@@ -2,20 +2,14 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { PlaylistSongs } from '../../interfaces/playlistSongs.interface';
 import { UserService } from '../../services/user/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgIf, NgOptimizedImage } from '@angular/common';
-import { Skeleton } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from "primeng/button";
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-curr-playlist',
   standalone: true,
   imports: [
-    NgIf,
-    NgOptimizedImage,
-    Skeleton,
-    TableModule,
-    ButtonModule
+    NgFor,
+    NgIf
   ],
   templateUrl: './curr-playlist.component.html',
 
@@ -92,7 +86,7 @@ export class CurrPlaylistComponent implements OnChanges {
   }
 
   getArtistNames(song: any): string {
-    return song.track.artists.map((artist: any) => artist.name).join(', ');
+    return (song.track?.artists ?? []).map((artist: any) => artist.name).join(', ');
   }
 
   ngOnChanges(changes: SimpleChanges): void {

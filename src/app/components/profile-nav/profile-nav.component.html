@@ -1,59 +1,41 @@
-<div class="bg-gray-100 p-4 h-full border-b-2">
-  <div class="flex flex-col lg:flex-row lg:justify-between items-start">
-    <div class="flex flex-col md:flex-row items-start">
+<div class="bg-gradient-to-b from-[#2a2a2a] to-[#121212] px-4 sm:px-6 lg:px-8 pt-8 pb-6 text-white">
+  <div class="flex flex-col md:flex-row md:items-end gap-5">
+    <!-- Avatar -->
+    <img *ngIf="user?.images?.length" [src]="user!.images[0].url" alt="Avatar"
+      class="h-28 w-28 flex-shrink-0 rounded-full object-cover shadow-2xl shadow-black/50" />
+    <div *ngIf="user && !user.images?.length"
+      class="flex h-28 w-28 flex-shrink-0 items-center justify-center rounded-full bg-white/10 shadow-2xl shadow-black/50">
+      <i class="pi pi-user text-gray-400" style="font-size: 2.5rem"></i>
+    </div>
+    <div *ngIf="!user" class="h-28 w-28 flex-shrink-0 rounded-full bg-white/10 animate-pulse"></div>
 
-      <img
-        *ngIf="user"
-        [ngSrc]="user.images[0].url"
-        alt="Avatar"
-        class="mr-5 mb-3 lg:mb-0 w-28 h-28 rounded-full"
-        height="70" width="71"/>
-      <p-skeleton *ngIf="!user" size="6rem" shape="circle"/>
-      <div>
-        <span *ngIf="user" class="text-gray-900 font-medium text-3xl">{{ user.display_name }}</span>
-        <p-skeleton *ngIf="!user" width="10rem" height="2rem" class="mt-1"/>
-<!--        <i class="pi pi-star text-2xl ml-4 text-yellow-500"></i>-->
-        <div class="flex flex-wrap items-center text-sm mt-3">
-          <div class="mr-5">
-            <span class="font-medium text-gray-500">Playlists</span>
-            <!-- I'm going to have to change when viewing someones profile that it only shows the public ones -->
-            <div *ngIf="playlists" class="text-gray-600 mt-1">{{ playlists.total }}</div>
-            <p-skeleton *ngIf="!playlists" class="mt-1" width="5rem" height="1.5rem"/>
-          </div>
-          <div class="mr-5">
-            <span class="font-medium text-gray-500">Followers</span>
-            <div *ngIf="user" class="text-gray-600 mt-1">{{ user.followers.total }}</div>
-            <p-skeleton *ngIf="!user" class="mt-1" width="5rem" height="1.5rem"/>
-          </div>
-          <div class="mr-5">
-            <span class="font-medium text-gray-500">Following</span>
-            <div *ngIf="following" class="text-gray-600 mt-1">{{ following.artists.total }}</div>
-            <p-skeleton *ngIf="!following" class="mt-1" width="5rem" height="1.5rem"/>
-          </div>
+    <div class="min-w-0">
+      <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Profile</span>
+
+      <h1 *ngIf="user" class="mt-1 truncate text-3xl sm:text-4xl font-bold tracking-tight">{{ user.display_name }}</h1>
+      <div *ngIf="!user" class="mt-2 h-8 w-48 rounded-md bg-white/10 animate-pulse"></div>
+
+      <!-- Stats -->
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <div class="rounded-xl bg-white/5 px-4 py-2 ring-1 ring-white/5">
+          <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Playlists</span>
+          <!-- I'm going to have to change when viewing someones profile that it only shows the public ones -->
+          <span *ngIf="playlists" class="mt-0.5 block text-lg font-bold tabular-nums">{{ playlists.total }}</span>
+          <div *ngIf="!playlists" class="mt-1.5 h-5 w-10 rounded bg-white/10 animate-pulse"></div>
+        </div>
+
+        <div class="rounded-xl bg-white/5 px-4 py-2 ring-1 ring-white/5">
+          <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Followers</span>
+          <span *ngIf="user" class="mt-0.5 block text-lg font-bold tabular-nums">{{ user.followers?.total ?? '—' }}</span>
+          <div *ngIf="!user" class="mt-1.5 h-5 w-10 rounded bg-white/10 animate-pulse"></div>
+        </div>
+
+        <div class="rounded-xl bg-white/5 px-4 py-2 ring-1 ring-white/5">
+          <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Following</span>
+          <span *ngIf="following" class="mt-0.5 block text-lg font-bold tabular-nums">{{ following.artists.total }}</span>
+          <div *ngIf="!following" class="mt-1.5 h-5 w-10 rounded bg-white/10 animate-pulse"></div>
         </div>
       </div>
     </div>
-
-    <!-- <div class="mt-3 lg:mt-0 flex space-x-2">
-      <button
-        class="flex justify-center items-center rounded-full bg-gray-200 text-gray-800 p-3  hover:bg-gray-300 transition"
-        aria-label="Bookmark"
-      >
-        <i class="pi pi-bookmark"></i>
-      </button>
-      <button
-        class="flex justify-center items-center rounded-full bg-green-500 text-white p-3 hover:bg-green-600 transition"
-        aria-label="Heart"
-      >
-        <i class="pi pi-heart"></i>
-      </button>
-      <button
-        class="flex justify-center items-center rounded-full bg-blue-500 text-white p-3 hover:bg-blue-600 transition"
-        aria-label="List"
-      >
-        <i class="pi pi-list"></i>
-      </button>
-    </div> -->
   </div>
-
 </div>

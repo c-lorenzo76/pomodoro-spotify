@@ -1,9 +1,9 @@
-<div>
+<div class="flex min-h-full flex-col bg-[#121212]">
   <app-profile-nav [user]="user" [playlists]="playlists" [following]="following"></app-profile-nav>
   <app-sub-navbar></app-sub-navbar>
-  <div class="flex flex-col lg:flex-row">
-    <app-countdown class="flex-1"></app-countdown>
-    <app-curr-playlist class="flex-1" [playlistID]="selectedPlaylistId" (playPlaylist)="onPlayPlaylist($event)">
+  <div class="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:flex-row">
+    <app-countdown class="flex-1 min-w-0"></app-countdown>
+    <app-curr-playlist class="flex-1 min-w-0" [playlistID]="selectedPlaylistId" (playPlaylist)="onPlayPlaylist($event)">
     </app-curr-playlist>
   </div>
 </div>
